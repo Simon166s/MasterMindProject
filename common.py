@@ -61,7 +61,7 @@ def evaluation(arg,ref):
     print((nombre_bien_places,nombre_mal_places))
     return(nombre_bien_places,nombre_mal_places)
 
-
+"""
 argument = ['E', 'G', 'Y', 'L', 'C']
 ref = ['B', 'V', 'E', 'A', 'O']
 
@@ -89,7 +89,8 @@ evaluation(argument,ref)
 argument = ['J', 'C', 'O', 'C', 'T', 'B']
 ref = ['V', 'B', 'E', 'X', 'Q', 'G']
 evaluation(argument,ref)
-
+"""
               
+
         
         

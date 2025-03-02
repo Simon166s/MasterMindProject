@@ -17,6 +17,7 @@ def evaluation(arg, ref):
     reste_ref = []
     
     for i in range(LENGTH):
+        # assert arg[i] in COLORS, "Les couleurs en entré doivent être dans les couleurs disponibles"
         if arg[i] == ref[i]:
             bien_places += 1
         else:

@@ -35,9 +35,9 @@ def evaluation(arg, ref):
     return bien_places, mal_places
 
 
-#TO DO : Ajouter doc string et meilleur commentaires et tt
+#TO DO : Ajouter doc string et meilleur commentaires et tt ET CHANGER LES VARIABLES EN ANGLAIS
 
-def donner_possible(combinaison_teste,evaluation_associe):
+def donner_possibles(combinaison_teste,evaluation_associe):
     bien_places,mal_places=evaluation_associe
     #Faire un ensemble avec toutes les possibilites,
     liste_ensemble_permutation=itertools.permutations(COLORS,LENGTH)
@@ -57,10 +57,17 @@ def donner_possible(combinaison_teste,evaluation_associe):
     #print(liste_return)
     return set(liste_return)
 
+# To DO : Commentaires + changer les variables en anglais
+def maj_possibles(ensemble_combinaisons_possibles, combinaison_teste, evaluation_associe):
+    ensemble_combinaisons_possibles_nouveau = donner_possibles(combinaison_teste,evaluation_associe)
+    
+    ensemble_combinaisons_possibles.intersection_update(ensemble_combinaisons_possibles_nouveau) # mets a jour directement le set avant le .intersectionupdate
+    return ensemble_combinaisons_possibles
+
 
 #%% Partie Test
 
-donner_possible(['R', 'V', 'B', 'J'],evaluation(['R', 'V', 'B', 'J'], ['R', 'V', 'B', 'J']))
+donner_possibles(['R', 'V', 'B', 'J'],evaluation(['R', 'V', 'B', 'J'], ['R', 'V', 'B', 'J']))
 
 
 argument = ['E', 'G', 'Y', 'L', 'C']

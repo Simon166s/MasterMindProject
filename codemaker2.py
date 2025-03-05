@@ -5,18 +5,16 @@ import common
 import itertools
 
 
-possible_combinations=[]
+possible_combinations= set()
+solution = ""
 def init():
     """
     Cette fonction, appellée à chaque début de partie, initialise un certain nombre de
     variables utilisées par le codemaker
     """
-    global solution
-    global possible_combinations
-    
-    
+    global solution, possible_combinations
     solution = ''.join(random.choices(common.COLORS, k=common.LENGTH))
-    possible_combinations=itertools.permutations(common.COLORS,common.LENGTH)
+    possible_combinations = set(map(''.join, itertools.product(common.COLORS, repeat = common.LENGTH)))
 
 def codemaker(combinaison):
     """
@@ -44,7 +42,7 @@ def codemaker(combinaison):
         
         for new_tested_combination in possible_combinations :
             
-            temp_possibles_combinations = possible_combinations.copy()
+            temp_possibles_combinations = possible_combinations.copy() # Niveau complexite c'est vraiment pas fou
             new_ev = common.evaluation(new_solution,new_tested_combination)
             common.maj_possibles(temp_possibles_combinations, new_tested_combination, new_ev)
             
@@ -55,12 +53,12 @@ def codemaker(combinaison):
         average_new_possible_combinations = sum(list_length_new_possible_combinations) / len(list_length_new_possible_combinations)
     
         #On ajoute au dictionnaire avec la nouvelle solution envisagée (en tuple sinon ca marche pas en tant que cle)
-        dictionnary_best_solution[tuple(new_solution)]=average_new_possible_combinations
+        dictionnary_best_solution[tuple(new_solution)] = average_new_possible_combinations
     
     
     
     #On prend celui avec le plus grand nombre de solutions envisagées
-    solution =  list(max(dictionnary_best_solution, key=dictionnary_best_solution.get))
+    solution =  list(max(dictionnary_best_solution, key = dictionnary_best_solution.get))
     
     return ev
             

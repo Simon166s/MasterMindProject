@@ -1,91 +1,91 @@
 #!/usr/bin/env python3
-
+import importlib
 import common
 
 
-def play(codemaker, codebreaker, quiet=False):
-    """
-    Fonction principale de ce programme :
-    Fait jouer ensemble le codebreaker et le codemaker donnés en arguments
-    Renvoie le nombre de coups joués pour trouver la solution
+# TO DO : passer les commentaires en anglais 
+def get_codebreaker_module(version: int):
+    """Importe dynamiquement le module codebreaker de la version donnée."""
+    try:
+        return importlib.import_module(f"codebreaker{version}")
+    except ImportError:
+        raise ValueError(f"Module codebreaker{version} non trouvé.")
 
-    Attention, il ne *doit* pas être nécessaire de modifier cette fonction 
-    pour faire fonctionner vos codemaker et codebreaker (dans le cas contraire,
-    ceux-ci ne seront pas considérés comme valables)
+def get_codemaker_module(version: int):
+    """Importe dynamiquement le module codemaker de la version donnée."""
+    try:
+        return importlib.import_module(f"codemaker{version}")
+    except ImportError:
+        raise ValueError(f"Module codemaker{version} non trouvé.")
+
+def check_compatibility(codemaker_version: int, codebreaker_version: int):
     """
-    n_essais = 0
-    codebreaker.init()
-    codemaker.init()
+    Vérifie que le couple codemaker/codebreaker est compatible.
+    On lève une erreur si l'on tente de jouer codemaker0 avec codebreaker2,
+    car codebreaker2 a besoin d'une évaluation complète.
+    """
+    if codemaker_version == 0 and codebreaker_version == 2:
+        raise ValueError("Incompatibilité détectée : codebreaker2 nécessite une évaluation complète et ne peut pas être utilisé avec codemaker0.")
+
+def play(codemaker_version: int, codebreaker_version: int, reset_solution = True, quiet = False) -> int:
+    """
+    Joue une partie pour un codebreaker donné sur une solution déjà initialisée ou pas dans le module codemaker.
+    Le codebreaker est cependant réinitialisé pour chaque partie.
+    """
+    check_compatibility(codemaker_version, codebreaker_version)
+    codemaker_module, codebreaker_module = get_codemaker_module(codemaker_version), get_codebreaker_module(codebreaker_version)
+
+    # Permet de pouvoir comparer deux codebreaker sur la meme solution
+    if reset_solution:
+        codemaker_module.init()
+
+    codebreaker_module.init()  # Réinitialisation du codebreaker
     ev = None
+    nbr_of_try = 0
+
     if not quiet:
-        print('Combinaisons de taille {}, couleurs disponibles {}'.format(common.LENGTH, common.COLORS))
+        print('combinations de taille {}, couleurs disponibles {}'.format(common.LENGTH, common.COLORS))
     while True:
-        combinaison = codebreaker.codebreaker(ev)
-        ev = codemaker.codemaker(combinaison)
-        n_essais += 1
+        combination = codebreaker_module.codebreaker(ev)
+        ev = codemaker_module.codemaker(combination)
+        nbr_of_try += 1
         if not quiet:
-            print("Essai {} : {} ({},{})".format(n_essais, combinaison, ev[0], ev[1]))
+            print("Essai {} : {} ({},{})".format(nbr_of_try, combination, ev[0], ev[1]))
         if ev[0] >= common.LENGTH:
             if not quiet:
-                print("Bravo ! Trouvé {} en {} essais".format(combinaison, n_essais))
-            return n_essais
+                print("Bravo ! Trouvé {} en {} essais".format(combination, nbr_of_try))
+            return nbr_of_try
 
+def play_log(codemaker_version: int, codebreaker_version: int, reset_solution = True, quiet = False) -> int:
+    """
+    Joue une partie pour un codebreaker donné sur la solution déjà initialisée dans le module codemaker.
+    Le codebreaker est réinitialisé pour chaque partie, tandis que le codemaker conserve la solution.
+    """
+    check_compatibility(codemaker_version, codebreaker_version)
+    codemaker_module, codebreaker_module = get_codemaker_module(codemaker_version), get_codebreaker_module(codebreaker_version)
 
-
-
-
-def play_log(codemaker, codebreaker, quiet=False):
-    n_essais = 0
-    codebreaker.init()
-    codemaker.init()
+    
+    # Permet de pouvoir comparer deux codebreaker sur la meme solution
+    if reset_solution:
+        codemaker_module.init()
+    codebreaker_module.init()  # Réinitialisation du codebreaker
     ev = None
-
-    ##### Seule chose qui change du programme play
+    nbr_of_try = 0 
+        ##### Seule chose qui change du programme play
     with open("log.txt", 'w') as log:
-    #####
         if not quiet:
-            print('Combinaisons de taille {}, couleurs disponibles {}'.format(common.LENGTH, common.COLORS))
-
+            print('combinations de taille {}, couleurs disponibles {}'.format(common.LENGTH, common.COLORS))
         while True:
-
-            combinaison = codebreaker.codebreaker(ev)
-            ev = codemaker.codemaker(combinaison)
-            n_essais += 1
-            ######## Seules choses qui changent du programme play
-            log.write(combinaison)
-            log.write(ev)
-            #########
+            combination = codebreaker_module.codebreaker(ev)
+            ev = codemaker_module.codemaker(combination)
+            nbr_of_try += 1
+            log.write(combination + "\n")
+            log.write(f"{ev[0]},{ev[1]} \n")
             if not quiet:
-                print("Essai {} : {} ({},{})".format(n_essais, combinaison, ev[0], ev[1]))
-            
-
+                print("Essai {} : {} ({},{})".format(nbr_of_try, combination, ev[0], ev[1]))
             if ev[0] >= common.LENGTH:
                 if not quiet:
-                    print("Bravo ! Trouvé {} en {} essais".format(combinaison, n_essais))
-                return n_essais
-            
-            
+                    print("Bravo ! Trouvé {} en {} essais".format(combination, nbr_of_try))
+                return nbr_of_try
 
-if __name__ == '__main__':
-    # Les lignes suivantes sont à modifier / supprimer selon ce qu'on veut faire, quelques exemples :
-
-    # Faire jouer ensemble codemaker0.py et codebreaker0.py pour 5 parties :
-    import codebreaker0
-    import codemaker0
-    for i in range(5):
-        play(codemaker0, codebreaker0)
-
-    #  Faire jouer un humain contre codemaker0.py :
-    #import codemaker0
-    #import human_codebreaker
-    #play(codemaker0, human_codebreaker)
-
-    # Et plus tard, vous pourrez faire jouer vos nouvelles version du codebreaker et codemaker :
-    #import codebreaker2
-    #import codemaker2
-    #play(codemaker2, codebreaker2)
-
-    # Ou encore :
-    #import codebreaker1
-    #import human_codemaker
-    #play(human_codemaker, codebreaker1)
+play_log(1, 2)

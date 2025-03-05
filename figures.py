@@ -9,6 +9,7 @@ def get_number_of_try(codebreaker_version: int) -> int:
     """
     Renvoie le nombre d'essais nécessaire pour une version donnée au codebreaker afin de trouver la solution
     """
+    print(f"solution: {codemaker0.solution}")
     nbr_of_try = 0
     maker_evaluation = None
 
@@ -21,12 +22,14 @@ def get_number_of_try(codebreaker_version: int) -> int:
         raise ValueError(f"Module {module_name} non trouvé.")
     
     codebreaker_module.init() # on initialise le codebreaker afin de vider le set des combinaisons testées à la partie d'avant
-    while maker_evaluation != common.LENGTH:
+    proposition = codebreaker_module.codebreaker(maker_evaluation)
+    maker_evaluation = common.evaluation(codemaker0.solution, proposition)
+    nbr_of_try += 1
+    while maker_evaluation[0] != common.LENGTH:
         nbr_of_try += 1
         # On appelle la fonction codebreaker de la version importée en passant l'évaluation précédente
         proposition = codebreaker_module.codebreaker(maker_evaluation)
-        # codemaker0.codemaker renvoie un tuple : on récupère le premier élément (la valeur d'évaluation)
-        maker_evaluation = codemaker0.codemaker(proposition)[0]
+        maker_evaluation = common.evaluation(codemaker0.solution, proposition)
         
     return nbr_of_try
 
@@ -46,7 +49,7 @@ def show_histrogramme(version: int, nbr_of_game: int):
     plt.show()
 
 # show_histrogramme(0, 100)
-# show_histrogramme(1, 100)
+show_histrogramme(2, 1)
 
 def get_gain(version1 : int, version2 : int)-> int:
     """
@@ -71,4 +74,4 @@ def show_gain(version1: int, version2: int, nbr_of_game: int):
     plt.title(f'Diagramme de dispersion du gain entre codebreaker{version1} et codebreaker{version2} sur {nbr_of_game} parties')
     plt.show()
 
-# show_gain(0, 1, 100)
+# show_gain(1, 2, 2)

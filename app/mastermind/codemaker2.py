@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 import sys
 import random 
-import common
 import itertools
-
+# On utilise un import relatif (`from . import common`)  
+# pour s'assurer que le module est bien importé,  
+# peu importe comment l'application est exécutée avec Flask.  
+# Cela évite les erreurs liées aux imports absolus.  
+from . import common
 
 possible_combinations= set()
 solution = ""

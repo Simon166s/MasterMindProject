@@ -1,20 +1,21 @@
 #!/usr/bin/env python3
 import importlib
-import common
+from . import common
+
 
 
 # TO DO : passer les commentaires en anglais 
 def get_codebreaker_module(version: int):
     """Importe dynamiquement le module codebreaker de la version donnée."""
     try:
-        return importlib.import_module(f"codebreaker{version}")
+        return importlib.import_module(f"app.mastermind.codebreaker{version}")
     except ImportError:
         raise ValueError(f"Module codebreaker{version} non trouvé.")
 
 def get_codemaker_module(version: int):
     """Importe dynamiquement le module codemaker de la version donnée."""
     try:
-        return importlib.import_module(f"codemaker{version}")
+        return importlib.import_module(f"app.mastermind.codemaker{version}")
     except ImportError:
         raise ValueError(f"Module codemaker{version} non trouvé.")
 
@@ -72,7 +73,7 @@ def play_log(codemaker_version: int, codebreaker_version: int, log_file: str, re
     ev = None
     nbr_of_try = 0 
         ##### Seule chose qui change du programme play
-    with open(f"{log_file}.txt", 'w') as log:
+    with open(f"app\logs\{log_file}.txt", 'w') as log:
         if not quiet:
             print('combinations de taille {}, couleurs disponibles {}'.format(common.LENGTH, common.COLORS))
         while True:

@@ -89,4 +89,10 @@ def play_log(codemaker_version: int, codebreaker_version: int, log_file: str, re
                     print("Bravo ! Trouvé {} en {} essais".format(combination, nbr_of_try))
                 return nbr_of_try
 
-play_log(1, 2, "random")
+
+# Pour ne pas executer ces fonctions lors des imports 
+if __name__ == "__main__":
+    print("Ce fichier play.py est exécuté directement.")
+    # appelle des fonctions ici 
+    play_log(1, 2, "random")
+

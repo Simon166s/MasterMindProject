@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Jeu du Mastermind - Version Humain</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/human_player.css') }}"
+</head>
+<body>
+    <h1>Jeu du Mastermind</h1>
+    <h2>Choisissez votre combinaison</h2>
+
+    <div class="mastermind-board">
+        {% for number in range(1,lenght+1)%}
+            <div class="slot" id="slot{{number}}"></div>
+        {% endfor %}
+    </div>
+
+
+
+    <div class="container">
+        <div class="color-options-container">
+            {% for color in colors_name%}
+                <div class="color-option {{ color }}" onclick="changeColor('{{color}}')"></div>
+            {% endfor %}
+        </div>
+    </div>
+    {% if message %}
+        <p>{{ message }}</p>
+    {% endif %}
+
+    {% if win_message %}
+    <p>{{ win_message }}</p>
+    {% else %}
+        {% if cplaced is not none and iplaced is not none %}
+            <p>L'évaluation est: {{ cplaced }} bien placés, {{ iplaced }} mal placés.</p>
+        {% else %}
+            <p>Aucune évaluation disponible pour le moment.</p>
+        {% endif %}
+    {% endif %}
+
+
+    <form method="POST" action="{{ url_for('main.human_player') }}">
+        <input type="hidden" id="combination" name="combination">
+        <button type="submit">Valider la combinaison</button>
+    </form>
+
+    <script>
+        const solution = {{ solution | tojson }};
+        console.log(solution);  // Test d'affichage de la variable dans la console du navigateur
+    </script>
+
+    <script src="{{ url_for('static', filename='js/human_player.js') }}">
+    </script>
+</body>
+</html>

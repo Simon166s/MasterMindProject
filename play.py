@@ -57,6 +57,7 @@ def play(codemaker_version: int, codebreaker_version: int, reset_solution = True
             return nbr_of_try
 
 def play_log(codemaker_version: int, codebreaker_version: int, reset_solution = True, quiet = False) -> int:
+    
     """
     Joue une partie pour un codebreaker donné sur la solution déjà initialisée dans le module codemaker.
     Le codebreaker est réinitialisé pour chaque partie, tandis que le codemaker conserve la solution.
@@ -79,6 +80,8 @@ def play_log(codemaker_version: int, codebreaker_version: int, reset_solution = 
             combination = codebreaker_module.codebreaker(ev)
             ev = codemaker_module.codemaker(combination)
             nbr_of_try += 1
+            print(combination)
+            print(ev)
             log.write(combination + "\n")
             log.write(f"{ev[0]},{ev[1]} \n")
             if not quiet:
@@ -88,4 +91,4 @@ def play_log(codemaker_version: int, codebreaker_version: int, reset_solution = 
                     print("Bravo ! Trouvé {} en {} essais".format(combination, nbr_of_try))
                 return nbr_of_try
 
-play_log(1, 2)
+play_log(1, 3)

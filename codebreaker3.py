@@ -7,16 +7,19 @@ import itertools
 permanent_combinations = set()
 possible_combinations = set()
 last_guess = None
+dict_backtracking = {}
 
 def init():
     #Initialise l'ensemble des valeurs possibles
-    global possible_combinations, permanent_combinations, last_guess
+    global possible_combinations, permanent_combinations, last_guess, dict_backtracking
     possible_combinations = set(map(''.join, itertools.product(common.COLORS, repeat = common.LENGTH)))
     permanent_combinations = possible_combinations.copy()
     last_guess = None
 
+    dict_backtracking = {}
+
 def codebreaker(evaluation_p):
-    global possible_combinations,permanent_combinations, last_guess
+    global possible_combinations,permanent_combinations, last_guess, dict_backtracking
     
     if evaluation_p is not None:
         # On filtre les combinaisons possibles en fonction de l'évaluation du dernier coup.
@@ -34,7 +37,13 @@ def codebreaker(evaluation_p):
         evaluation_groups = {}
 
         for comb in possible_combinations:
-            eval_result = common.evaluation(test_combination, comb)
+            if (test_combination,comb) not in dict_backtracking :
+                
+                eval_result = common.evaluation(test_combination, comb)
+                dict_backtracking[(test_combination,comb)]=eval_result
+                
+            else :
+                eval_result = dict_backtracking[(test_combination,comb)]
             if eval_result not in evaluation_groups:
                 evaluation_groups[eval_result] = []
             evaluation_groups[eval_result].append(comb)

@@ -47,7 +47,6 @@ def donner_possibles(tested_combination: str, associated_evaluation: tuple) -> s
     possible_combination = set() 
     
     for element in all_permutations :
-        print("test")
         #On regarde si le nombre de meme couleur, si c'est egal a bien_places+ mal_places c'est deja bien
         #Ensuite on regarde si le nombre de meme places = nombre bien places
         cplaces, iplaces = evaluation(tested_combination, element)

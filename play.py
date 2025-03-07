@@ -80,8 +80,6 @@ def play_log(codemaker_version: int, codebreaker_version: int, reset_solution = 
             combination = codebreaker_module.codebreaker(ev)
             ev = codemaker_module.codemaker(combination)
             nbr_of_try += 1
-            print(combination)
-            print(ev)
             log.write(combination + "\n")
             log.write(f"{ev[0]},{ev[1]} \n")
             if not quiet:

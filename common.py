@@ -36,11 +36,12 @@ def evaluation(arg, ref):
 
 
 #TO DO : Ajouter doc string et meilleur commentaires et tt 
+all_permutations = set(map(''.join,itertools.product(COLORS,repeat = LENGTH))) # On convertit les tuples en chaines de caractères 
 
 def donner_possibles(tested_combination: str, associated_evaluation: tuple) -> set:
+    global all_permutations
     correctly_placed , incorrectly_placed = associated_evaluation 
     #Faire un ensemble avec toutes les possibilites,
-    all_permutations = set(map(''.join,itertools.product(COLORS,repeat = LENGTH))) # On convertit les tuples en chaines de caractères 
     #Maintenant on va supprimer les combinaisons qui sont pas possibles et apres on aura l ensemble des combinaisons finales
     
     possible_combination = set() 

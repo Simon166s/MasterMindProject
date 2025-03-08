@@ -60,13 +60,19 @@ def codemaker(combination: str) -> tuple:
 
         for comb in permanent_combinations:
             # Vérifie si l'évaluation a déjà été calculée
-            if (test_combination, comb) not in dict_backtracking:
+            if (test_combination, comb) not in dict_backtracking or (comb, test_combination) not in dict_backtracking:
                 # Calcule l'évaluation entre `test_combination` et `comb`
                 eval_result = common.evaluation(test_combination, comb)
                 dict_backtracking[(test_combination, comb)] = eval_result
+                dict_backtracking[comb,test_combination] = eval_result
             else:
                 # Récupère l'évaluation déjà calculée
-                eval_result = dict_backtracking[(test_combination, comb)]
+                if (test_combination,comb) in dict_backtracking :
+                    
+                    
+                    eval_result = dict_backtracking[(test_combination, comb)]
+                else :
+                    eval_result = dict_backtracking[(comb,test_combination)]
             
             # Ajoute la combinaison au groupe correspondant à son évaluation
             if eval_result not in evaluation_groups:

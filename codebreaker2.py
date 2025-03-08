@@ -25,7 +25,7 @@ def codebreaker(evaluation_p: tuple) -> str:
     Returns:
         str: Une combinaison à essayer, choisie aléatoirement parmi les combinaisons possibles restantes.
     """
-    global possible_combinations, last_guess  # Variables globales
+    global possible_combinations, last_guess 
     
     if evaluation_p is not None:
         # Met à jour l'ensemble des combinaisons possibles en fonction de l'évaluation précédente

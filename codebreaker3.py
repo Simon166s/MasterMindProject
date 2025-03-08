@@ -46,13 +46,19 @@ def codebreaker(evaluation_p: tuple) -> str:
 
         for comb in possible_combinations:
             # Vérifie si l'évaluation a déjà été calculée
-            if (test_combination, comb) not in dict_backtracking:
+            if (test_combination, comb) not in dict_backtracking or (comb,test_combination) not in dict_backtracking :
                 # Calcule l'évaluation entre `test_combination` et `comb`
                 eval_result = common.evaluation(test_combination, comb)
                 dict_backtracking[(test_combination, comb)] = eval_result
+                dict_backtracking[(comb,test_combination)] = eval_result
             else:
+                
                 # Récupère l'évaluation déjà calculée
-                eval_result = dict_backtracking[(test_combination, comb)]
+                if (test_combination, comb) in dict_backtracking :
+                    
+                    eval_result = dict_backtracking[(test_combination, comb)]
+                else :
+                    eval_result = dict_backtracking[(comb, test_combination)]
             
             # Ajoute la combinaison au groupe correspondant à son évaluation
             if eval_result not in evaluation_groups:
@@ -64,7 +70,7 @@ def codebreaker(evaluation_p: tuple) -> str:
         
         # Si cette combinaison réduit l'espace plus que la précédente, on la choisit
         if worst_case < min_worst_case:
-            best_combination = test_combination
+            best_combination = comb
             min_worst_case = worst_case
 
     # Sauvegarde la dernière combinaison essayée

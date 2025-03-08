@@ -89,4 +89,4 @@ def play_log(codemaker_version: int, codebreaker_version: int, reset_solution = 
                     print("Bravo ! Trouvé {} en {} essais".format(combination, nbr_of_try))
                 return nbr_of_try
 
-play_log(1, 3)
+#play_log(2, 3)

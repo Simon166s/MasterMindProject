@@ -9,8 +9,8 @@
     <h1>Bienvenue sur Mastermind</h1>
     <nav>
         <ul>
-            <li><a href = "{{url_for('main.human_player')}}"> Jouer en humain </a> </li>
-            <li>hello</li>
+            <li><a href="{{ url_for('main.game', mode='auto') }}">Play in auto mode</a>
+            <li><a href="{{ url_for('main.game', mode='human') }}">Play in human mode</a>
             <li>I love</li>
         </ul>
     </nav>

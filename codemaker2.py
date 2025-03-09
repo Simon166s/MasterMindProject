@@ -3,6 +3,7 @@ import sys
 import random 
 import common
 import itertools
+import past_evaluations
 
 
 possible_combinations = set()
@@ -25,7 +26,9 @@ def init():
     # Copie de `possible_combinations` dans `permanent_combinations` pour référence future
     permanent_combinations = possible_combinations.copy()
     
-    #print(solution)
+    if past_evaluations.LENGTH != common.LENGTH or past_evaluations.LENGTH != common.LENGTH :
+        past_evaluations.reset_dict()
+    
     
     
 def codemaker(combination: str) -> tuple:
@@ -48,7 +51,6 @@ def codemaker(combination: str) -> tuple:
     common.maj_possibles(possible_combinations, combination, ev)
     
     # Dictionnaire pour stocker les résultats d'évaluation et éviter les calculs redondants
-    dict_backtracking = {}
     
     best_combination = None  # Meilleure combinaison trouvée
     max_worst_case = -float('inf')  # Taille maximale du pire cas
@@ -60,19 +62,19 @@ def codemaker(combination: str) -> tuple:
 
         for comb in permanent_combinations:
             # Vérifie si l'évaluation a déjà été calculée
-            if (test_combination, comb) not in dict_backtracking or (comb, test_combination) not in dict_backtracking:
+            if (test_combination, comb) not in past_evaluations.dict_backtracking or (comb, test_combination) not in past_evaluations.dict_backtracking:
                 # Calcule l'évaluation entre `test_combination` et `comb`
                 eval_result = common.evaluation(test_combination, comb)
-                dict_backtracking[(test_combination, comb)] = eval_result
-                dict_backtracking[comb,test_combination] = eval_result
+                past_evaluations.dict_backtracking[(test_combination, comb)] = eval_result
+                past_evaluations.dict_backtracking[comb,test_combination] = eval_result
             else:
                 # Récupère l'évaluation déjà calculée
-                if (test_combination,comb) in dict_backtracking :
+                if (test_combination,comb) in past_evaluations.dict_backtracking :
                     
                     
-                    eval_result = dict_backtracking[(test_combination, comb)]
+                    eval_result = past_evaluations.dict_backtracking[(test_combination, comb)]
                 else :
-                    eval_result = dict_backtracking[(comb,test_combination)]
+                    eval_result = past_evaluations.dict_backtracking[(comb,test_combination)]
             
             # Ajoute la combinaison au groupe correspondant à son évaluation
             if eval_result not in evaluation_groups:

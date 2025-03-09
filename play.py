@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import importlib
 import common
-
+import past_evaluations
 
 # TO DO : passer les commentaires en anglais 
 def get_codebreaker_module(version: int):

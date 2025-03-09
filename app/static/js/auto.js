@@ -21,7 +21,7 @@ const letterToColor = {
 // Fonction pour mettre à jour les evaluation-slot
 function updateEvaluationSlots(line, cplaced, iplaced) {
     let slots = document.querySelectorAll(`.evaluation-area-${line} .evaluation-slot`);
-    
+
     if (!slots.length) {
         console.warn(`Aucun slot trouvé pour la ligne ${line}`);
         return;
@@ -51,64 +51,56 @@ function displayNextAttempt() {
     console.log("displayNextAttempt appelée, currentAttempt:", currentAttempt);
 
     // Vérifier que nous avons encore des tentatives à traiter
-    if (currentAttempt < totalAttempts) {
+    if (currentAttempt <= totalAttempts) {
         // Récupérer l'essai actuel de la liste `attempts`
-        let attemptStr = attempts[currentAttempt];
-        console.log("Traitement de l'essai:", attemptStr);
+        let to_extract = attempts[currentAttempt - 1];
+        let combination = to_extract[0]
+        let cplaced = parseInt(to_extract[1][0]);    // Nombre de bien placés
+        let iplaced = parseInt(to_extract[1][2]);    // Nombre de mal placés
+        console.log(combination, cplaced, iplaced);
 
-        // Vérifier que la structure de l'essai correspond au format attendu
-        let match = attemptStr.match(/Essai (\d+) : ([A-Z]+) \((\d+) bien placées, (\d+) mal placées\)/);
-
-        if (match) {
-            console.log("Regex matchée:", match);
-
-            let attemptNum = parseInt(match[1]);  // Numéro de l'essai
-            let combination = match[2];          // Combinaison testée
-            let cplaced = parseInt(match[3]);    // Nombre de bien placés
-            let iplaced = parseInt(match[4]);    // Nombre de mal placés
-
-            // Mettre à jour les plots avec les couleurs de la combinaison testée
-            for (let i = 0; i < combination.length; i++) {
-                let slot = document.getElementById(`slot-${currentAttempt}-${i + 1}`);
-                if (slot) {
-                    console.log(`Mise à jour du slot ${i + 1} avec la couleur`, combination[i]);
-                    slot.style.backgroundColor = letterToColor[combination[i]];
-                } else {
-                    console.warn(`Slot slot-${currentAttempt}-${i + 1} introuvable`);
-                }
+        // Mettre à jour les plots avec les couleurs de la combinaison testée
+        for (let i = 0; i < combination.length; i++) {
+            let slot = document.getElementById(`slot-${currentAttempt}-${i + 1}`);
+            if (slot) {
+                console.log(`Mise à jour du slot ${i + 1} avec la couleur`, combination[i]);
+                slot.style.backgroundColor = letterToColor[combination[i]];
+            } else {
+                console.warn(`Slot slot-${currentAttempt}-${i + 1} introuvable`);
             }
-
-            // Mettre à jour les slots d'évaluation
-            updateEvaluationSlots(currentAttempt, cplaced, iplaced);
-
-            // Mettre à jour la position de la flèche
-            const arrow = document.querySelector(".arrow-container");
-            if (arrow) {
-                const lineHeight = 55; // Hauteur d'une ligne (slot + gap)
-                const translationY = (currentAttempt - 1) * lineHeight;
-                arrow.style.transform = `translateY(-${Math.min(translationY, (totalAttempts - 1) * lineHeight)}px)`;
-            }
-
-            // Restaurer les couleurs des slots d'évaluation depuis le localStorage
-            let slots = document.querySelectorAll(`.evaluation-area-${currentAttempt} .evaluation-slot`);
-            slots.forEach((slot, index) => {
-                let savedColor = localStorage.getItem(`evaluation-slot-${currentAttempt}-${index}`);
-                if (savedColor) {
-                    slot.style.backgroundColor = savedColor;
-                }
-            });
-
-            // Passer à l'essai suivant après un délai
-            currentAttempt++;
-            setTimeout(displayNextAttempt, 3000);
-        } else {
-            console.error("Format incorrect pour l'essai :", attemptStr);
         }
-    } else {
-        console.log("Fin des tentatives");
-    }
+
+        // Mettre à jour les slots d'évaluation
+        updateEvaluationSlots(currentAttempt, cplaced, iplaced);
+
+        // Mettre à jour la position de la flèche
+        const arrow = document.querySelector(".arrow-container");
+        if (arrow) {
+            const lineHeight = 55; // Hauteur d'une ligne (slot + gap)
+            const translationY = (currentAttempt - 1) * lineHeight;
+            arrow.style.transform = `translateY(-${Math.min(translationY, (totalAttempts - 1) * lineHeight)}px)`;
+        }
+
+        // Restaurer les couleurs des slots d'évaluation depuis le localStorage
+        let slots = document.querySelectorAll(`.evaluation-area-${currentAttempt} .evaluation-slot`);
+        slots.forEach((slot, index) => {
+            let savedColor = localStorage.getItem(`evaluation-slot-${currentAttempt}-${index}`);
+            if (savedColor) {
+                slot.style.backgroundColor = savedColor;
+            }
+        });
+
+        // Passer à l'essai suivant après un délai
+        currentAttempt++;
+        setTimeout(displayNextAttempt, 3000);
+    } 
 }
 
+function removeResetParam() {
+    const url = new URL(window.location);
+    url.searchParams.delete('reset');  // Retire le paramètre run_js
+    window.history.replaceState({}, document.title, url.toString());  // Met à jour l'URL sans recharger la page
+}
 // Déclencher l'affichage des tentatives après le chargement de la page
 window.onload = function () {
     console.log("window.onload appelé");
@@ -117,4 +109,11 @@ window.onload = function () {
     } else {
         console.warn("Aucune tentative disponible dans attempts.");
     }
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('reset') === 'true') {
+        localStorage.clear();
+        removeResetParam();  // Retire le paramètre de l'URL
+    }
 };
+
+

@@ -103,7 +103,7 @@
       </div>
 
     <div id="container">
-        <form method="POST" action="{{ url_for('main.game') }}">
+        <form method="POST" action="{{ url_for('main.game', mode = mode, codemaker= codemakerversion) }}">
             <input type="hidden" id="combination" name="combination">
             <button class="submit" type="submit" id="submit">
                 <span class="circle" aria-hidden="true">

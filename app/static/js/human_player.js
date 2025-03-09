@@ -60,15 +60,7 @@ if (combinationButton) {
 
 // Réinitialisation du jeu
 function resetGame() {
-    localStorage.removeItem('currentLine');
-
-    Object.keys(localStorage).forEach(function(key) {
-        if (key.startsWith('slot-') || key.startsWith('evaluation-slot-')) {
-            localStorage.removeItem(key);
-        }
-    });
-
-    location.reload();
+    localStorage.clear();
 }
 
 // Drag & Drop pour sélectionner les couleurs

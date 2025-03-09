@@ -36,28 +36,26 @@ def get_input_from_post():
 def flask_output(message):
     session.setdefault('attempts', []).append(message)
 
-def play_step(combination: str):
-    solution = session.get('solution')
-    ev = common.evaluation(combination, solution)
+def get_nbr_of_try() -> int:
     session['nbr_of_try'] = session.get('nbr_of_try', 0) + 1
-    return ev, session['nbr_of_try']
+    return session['nbr_of_try']
+
+def get_solution():
+    solution = session.get('solution')
+    return solution
 
 
-
-
-
-def human_mode(codemaker):
-        # Initialisation
-
+def human_mode(codemakerversion):
+    # Initialisation
+    if codemakerversion != "human":
+        codemaker = get_codemaker_module(codemakerversion)
     if request.method == 'GET':
         session['nbr_of_try'] = 0
-        if codemaker != "human":
-            codemaker = get_codemaker_module(codemaker)
+        if codemakerversion != "human":
             codemaker.init()  # Appel de init() seulement lors de la première visite
             session['solution'] = codemaker.solution
 
-    solution = session.get('solution')
-    print(solution)
+    solution = get_solution()
     message = ""
     win_message = ""
     combination = ""
@@ -68,7 +66,7 @@ def human_mode(codemaker):
     iplaced = None
     nbr_of_try = ""
     nbr_of_line = 10
-
+    mode = "human"
     if request.method == "POST":
         combination = get_input_from_post()
         erreur = human_codebreaker.verif_combination(combination)
@@ -80,8 +78,8 @@ def human_mode(codemaker):
             message = f"Combination accepted: {combination}"
 
             # Évaluation de la combinaison
-            (cplaced, iplaced), nbr_of_try = play_step(combination)[0] ,play_step(combination)[1]
-
+            (cplaced, iplaced), nbr_of_try = codemaker.codemaker(combination), get_nbr_of_try()
+            print(cplaced, iplaced)
             # Si la combinaison est correcte, affichage du message de victoire
             if cplaced >= common.LENGTH:
                 win_message = f"Bravo ! Trouvé {combination} en {nbr_of_try} essais"
@@ -101,48 +99,60 @@ def human_mode(codemaker):
         win_message=win_message, 
         nbr_of_try=nbr_of_try,
         solution = solution,
-        nbr_of_line=nbr_of_line
+        nbr_of_line=nbr_of_line,
+        mode = mode,
+        codemakerversion = codemakerversion
     )
 
 def auto_mode(mode, codemaker):
-    session['attempts'] = []  # Réinitialisation de l'historique
+    session['attempts'] = []
     session['nbr_of_try'] = 0  # Réinitialiser le compteur d'essais
     length = common.LENGTH
     nbr_of_line = 10
-    # colors_name = [color_dic[code] for code in common.COLORS]
-    # colors = ", ".join(common.COLORS)
-    def flask_output(message):
-        session.setdefault('attempts', []).append(message)
 
-    play(
-        codemaker_version= codemaker ,  # Met la bonne version de ton codemaker
-        codebreaker_version= mode,  # Met la bonne version du codebreaker automatique
+    def flask_output(message):
+        print(message)
+        attempts = session.get("attempts", [])  # Récupérer la liste actuelle
+        attempts.append(message)  # Ajouter le message
+        session["attempts"] = attempts  # Mettre à jour la session
+        session.modified = True  # Signaler à Flask que la session a changé
+
+    # Appel de play_log pour générer les logs et remplir la session
+    play_log(
+        codemaker_version=codemaker if codemaker != "human" else 1,  # Met la bonne version de ton codemaker et utilise la version 1 si c'est un humain
+        codebreaker_version=mode,     # Met la bonne version du codebreaker automatique
+        log_file=None,
         reset_solution=True,
-        output=flask_output,
-        get_input=None,  # Pas d'input utilisateur
-        quiet=False
+        quiet=True,
+        output_func=flask_output,
+        human_solution= session.get("solution") 
     )
+
+    # Après que play_log a modifié la session, on récupère la liste des messages
+    attempts_not_paired = session.get('attempts', [])
+    # Fusionner les éléments par paire
+    attempts = list(zip(attempts_not_paired[::2], attempts_not_paired[1::2]))
 
     return render_template(
         "auto.html",
         message="Mode automatique terminé.",
-        attempts=session.get('attempts', []),
-        length = length,
+        attempts=attempts,
+        length=length,
         nbr_of_line=nbr_of_line
-
     )
+
 
 @main.route("/game", methods=['GET', 'POST'])
 def game():
     """
     Adaptation du jeu sans utiliser play, avec comptage des essais
     """
-    mode = request.args.get("mode", "human")  # Par défaut, le mode est humain
+    mode = request.args.get("mode")  
     codemaker = request.args.get("codemaker")
     if mode == "human":
         return human_mode(codemaker)
     else:
-        return auto_mode(mode,codemaker)
+        return auto_mode(mode, codemaker)
 
 
 
@@ -157,10 +167,10 @@ def human_codemaker():
     """
     colors_name = [color_dic[code] for code in common.COLORS]
     length = common.LENGTH
-    mode = request.args.get("mode", "human")  # Par défaut, le mode est humain
+    codebreaker = request.args.get("codebreaker")  # Par défaut, le mode est humain
     if request.method == 'POST':
         session['solution'] = get_solution_from_post()
-        return redirect(url_for('main.game', mode= mode, reset = "true", codemaker = "human"))
+        return redirect(url_for('main.game', mode = codebreaker, reset = "true", codemaker = "human"))
     return render_template(
         "human_codemaker.html",
         solution = session.get('solution'),

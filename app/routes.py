@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, url_for, session
+from flask import Blueprint, render_template, request, url_for, session, redirect
 from app.mastermind import *
 
 
@@ -18,7 +18,7 @@ color_dic = {
 # Création d'un blueprint
 main = Blueprint('main', __name__)
 
-
+# Page d'accueil
 @main.route("/", methods=['GET', 'POST'])
 def index():
     
@@ -27,7 +27,7 @@ def index():
     return render_template("index.html")
 
 
-
+# Pages de codebreaker 
 def get_input_from_post():
     # Ici, ev peut être utilisé pour afficher des indices ou autre dans le template si nécessaire.
     # On récupère la combinaison saisie par l'utilisateur dans le formulaire.
@@ -44,16 +44,20 @@ def play_step(combination: str):
 
 
 
-def human_mode():
+
+
+def human_mode(codemaker):
         # Initialisation
 
     if request.method == 'GET':
-        codemaker0.init()  # Appel de init() seulement lors de la première visite
-        session['codemaker_initialized'] = True  # Marquer que l'initialisation a été faite
-        session['nbr_of_try'] =0
-        session['solution'] = codemaker0.solution
+        session['nbr_of_try'] = 0
+        if codemaker != "human":
+            codemaker = get_codemaker_module(codemaker)
+            codemaker.init()  # Appel de init() seulement lors de la première visite
+            session['solution'] = codemaker.solution
 
     solution = session.get('solution')
+    print(solution)
     message = ""
     win_message = ""
     combination = ""
@@ -100,10 +104,10 @@ def human_mode():
         nbr_of_line=nbr_of_line
     )
 
-def auto_mode():
+def auto_mode(mode, codemaker):
     session['attempts'] = []  # Réinitialisation de l'historique
     session['nbr_of_try'] = 0  # Réinitialiser le compteur d'essais
-    lenght = common.LENGTH
+    length = common.LENGTH
     nbr_of_line = 10
     # colors_name = [color_dic[code] for code in common.COLORS]
     # colors = ", ".join(common.COLORS)
@@ -111,8 +115,8 @@ def auto_mode():
         session.setdefault('attempts', []).append(message)
 
     play(
-        codemaker_version=1,  # Met la bonne version de ton codemaker
-        codebreaker_version=2,  # Met la bonne version du codebreaker automatique
+        codemaker_version= codemaker ,  # Met la bonne version de ton codemaker
+        codebreaker_version= mode,  # Met la bonne version du codebreaker automatique
         reset_solution=True,
         output=flask_output,
         get_input=None,  # Pas d'input utilisateur
@@ -123,11 +127,10 @@ def auto_mode():
         "auto.html",
         message="Mode automatique terminé.",
         attempts=session.get('attempts', []),
-        lenght = lenght,
+        length = length,
         nbr_of_line=nbr_of_line
 
     )
-
 
 @main.route("/game", methods=['GET', 'POST'])
 def game():
@@ -135,10 +138,32 @@ def game():
     Adaptation du jeu sans utiliser play, avec comptage des essais
     """
     mode = request.args.get("mode", "human")  # Par défaut, le mode est humain
+    codemaker = request.args.get("codemaker")
     if mode == "human":
-        return human_mode()
-    elif mode == "auto":
-        return auto_mode()
+        return human_mode(codemaker)
     else:
-        return "Mode invalide", 400  # Erreur si le mode n'est pas reconnu
-    
+        return auto_mode(mode,codemaker)
+
+
+
+# Pages codemaker
+def get_solution_from_post():
+    return request.form.get('solution', '').upper()
+
+@main.route("/human_codemaker", methods = ['GET', 'POST'])
+def human_codemaker():
+    """
+    Selection d'une solution + demande si jouer contre un codebreaker humain ou pas 
+    """
+    colors_name = [color_dic[code] for code in common.COLORS]
+    length = common.LENGTH
+    mode = request.args.get("mode", "human")  # Par défaut, le mode est humain
+    if request.method == 'POST':
+        session['solution'] = get_solution_from_post()
+        return redirect(url_for('main.game', mode= mode, reset = "true", codemaker = "human"))
+    return render_template(
+        "human_codemaker.html",
+        solution = session.get('solution'),
+        length = length,
+        colors_name = colors_name
+    )

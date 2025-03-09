@@ -7,13 +7,41 @@
 </head>
 <body>
     <h1>Bienvenue sur Mastermind</h1>
-    <nav>
-        <ul>
-            <li><a href="{{ url_for('main.game', mode='auto') }}">Play in auto mode</a>
-            <li><a href="{{ url_for('main.game', mode='human') }}">Play in human mode</a>
-            <li>I love</li>
-        </ul>
-    </nav>
+    
+    <p>Full auto</p>
+    <ul>
+        {% for codebreakernumber in range(3) %}
+            {% for codemakernumber in range(3) %}
+                <li>
+                    <a href="{{ url_for('main.game', mode = codebreakernumber, codemaker = codemakernumber) }}">
+                        Auto mode: codemaker {{ codemakernumber }} vs codebreaker {{ codebreakernumber }}
+                    </a>
+                </li>
+            {% endfor %}
+        {% endfor %}
+    </ul>
+
+    <p>Human vs auto modes</p>
+    <ul>
+        {% for codemakernumber in range(3) %}
+            <li>
+                <a href="{{ url_for('main.game', mode='human', codemaker = codemakernumber, reset='true') }}">
+                    Play in human mode against auto codemaker {{ codemakernumber }}
+                </a>
+            </li>
+        {% endfor %}
+        {% for codebreakernumber in range(3) %}
+            <li>
+                <a href="{{ url_for('main.human_codemaker', mode='auto', codebreaker = codebreakernumber) }}">
+                    Play as human codemaker against codebreaker {{ codebreakernumber }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+    
+    <p>Full human mode</p>
+    <p><a href="{{ url_for('main.human_codemaker', mode='human') }}">Play full human mode</a></p>
+    
     <div class="images">
         <p></p>
     </div>

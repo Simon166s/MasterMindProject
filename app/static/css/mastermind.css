@@ -358,6 +358,10 @@ button.submit {
   text-align: center;
   transform: scale(0);
   animation: popup 0.5s forwards; }
+  .popup-message a {
+    cursor: pointer; }
+  .popup-message p {
+    cursor: pointer; }
 
 /* Animation d'apparition de la popup */
 @keyframes popup {

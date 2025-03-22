@@ -54,4 +54,9 @@ Exemple pour démarrer l'application :
 python -m app.mastermind.figures
 ```
 
+## Tests:
+Nous avons fait une batterie de tests unitaires via la librairie unittest, ils sont situés dans le dossiers tests, pour exécuter les test:
 
+```sh
+python -m unittest discover -s tests
+```

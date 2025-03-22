@@ -113,7 +113,7 @@ export function displayWin(currentLine, solutiontext = ""){
   const winMessage = document.getElementById('winMessage');
   const looseMessage = document.getElementById('looseMessage');
   document.getElementById("nbr_of_line").textContent = currentLine;
-  solution =  document.getElementById("solution")
+  let solution =  document.getElementById("solution");
   if (solution){
     solution.textContent = solutiontext;
   }
@@ -130,7 +130,7 @@ export function displayLoose(solutiontext = ""){
   const popupContainer = document.getElementById('popupContainer');
   const winMessage = document.getElementById('winMessage');
   const looseMessage = document.getElementById('looseMessage');
-  solution =  document.getElementById("solution")
+  let solution =  document.getElementById("solution")
   if (solution){
     solution.textContent = solutiontext;
   }

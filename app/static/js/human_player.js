@@ -199,6 +199,19 @@ function removeResetParam() {
  * Restores the game state from local storage and updates UI elements.
  */
 document.addEventListener('DOMContentLoaded', function() {
+  const params = new URLSearchParams(window.location.search);
+  
+  if (params.get('reset') === 'true') {
+    // Supprimer le paramètre reset avant de recharger la page
+    removeResetParam();
+
+    // Attendre un petit délai avant le rechargement
+    setTimeout(() => {
+      resetGame();
+    }, 100); // Petit délai pour éviter une boucle infinie
+  }
+});
+
     // Vérifier dans le sessionStorage
   if (sessionStorage.getItem("popreset") === 'true') {
       resetPopup();
@@ -264,4 +277,4 @@ window.resetGame = resetGame;
     resetGame();
     removeResetParam();
   }
-});
+

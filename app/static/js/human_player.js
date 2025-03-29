@@ -12,7 +12,7 @@ let currentLine = localStorage.getItem('currentLine')
 // are assumed to be defined elsewhere in your application.
 
 
-import {fillSlot, updateArrow, displayLoose, displayWin, resetPopup} from './basics.js';
+import { fillSlot, updateArrow, displayLoose, displayWin, resetPopup } from './basics.js';
 
 /**
  * -----------------------------
@@ -29,32 +29,32 @@ import {fillSlot, updateArrow, displayLoose, displayWin, resetPopup} from './bas
  * @param {number} iplaced - Number of misplaced colors.
  */
 function updateEvaluationSlots(line, cplaced, iplaced) {
-    let slots = document.querySelectorAll(`.evaluation-area-${line} .evaluation-slot`);
-    let index = 0;
+  let slots = document.querySelectorAll(`.evaluation-area-${line} .evaluation-slot`);
+  let index = 0;
 
-    
-    // Met à jour les slots pour les couleurs bien placées
-    for (let i = 0; i < cplaced; i++) {
-      if (index < slots.length) {
-        slots[index].style.backgroundColor = "red";
-        localStorage.setItem(`evaluation-slot-${line}-${index}`, "red");
-        index++;
-      }
-    }
-    
-    // Met à jour les slots pour les couleurs mal placées
-    for (let i = 0; i < iplaced; i++) {
-      if (index < slots.length) {
-        slots[index].style.backgroundColor = "white";
-        localStorage.setItem(`evaluation-slot-${line}-${index}`, "white");
-        index++;
-      }
+
+  // Met à jour les slots pour les couleurs bien placées
+  for (let i = 0; i < cplaced; i++) {
+    if (index < slots.length) {
+      slots[index].style.backgroundColor = "red";
+      localStorage.setItem(`evaluation-slot-${line}-${index}`, "red");
+      index++;
     }
   }
 
-  /**
- * Resets the game by clearing all data from local storage.
- */
+  // Met à jour les slots pour les couleurs mal placées
+  for (let i = 0; i < iplaced; i++) {
+    if (index < slots.length) {
+      slots[index].style.backgroundColor = "white";
+      localStorage.setItem(`evaluation-slot-${line}-${index}`, "white");
+      index++;
+    }
+  }
+}
+
+/**
+* Resets the game by clearing all data from local storage.
+*/
 
 /**
  * 
@@ -67,20 +67,20 @@ function updateEvaluationSlots(line, cplaced, iplaced) {
 function getCombination() {
   let combination = '';
   const colorToLetter = {
-    'firebrick': 'R',    
-    'royalblue': 'B',    
-    'limegreen': 'V',    
-    'yellow': 'J',      
-    'darkorange': 'O',   
-    'black': 'N',        
-    'sienna': 'M',       
-    'gray': 'G'       
+    'firebrick': 'R',
+    'royalblue': 'B',
+    'limegreen': 'V',
+    'yellow': 'J',
+    'darkorange': 'O',
+    'black': 'N',
+    'sienna': 'M',
+    'gray': 'G'
   };
 
   // Iterate through each slot in the current line
   for (let i = 1; i <= length; i++) {
     const slot = document.getElementById(`slot-${currentLine}-${i}`);
-    let slotColor = slot ? window.getComputedStyle(slot).getPropertyValue('--slot-color') : '';    
+    let slotColor = slot ? window.getComputedStyle(slot).getPropertyValue('--slot-color') : '';
     console.log(slotColor)
 
     // Map the slot color to its corresponding letter
@@ -147,7 +147,7 @@ function handleDrop(event) {
     return;
   }
   event.preventDefault();
-  
+
   const color = event.dataTransfer.getData("text/plain");
   if (color) {
     fillSlot(slot, color);
@@ -168,39 +168,33 @@ function handleDrop(event) {
 // Add event listener to the submit button to progress to the next line
 const combinationButton = document.getElementById("submit");
 if (combinationButton) {
-  combinationButton.addEventListener('click', function() {
+  combinationButton.addEventListener('click', function () {
     currentLine++;
     localStorage.setItem('currentLine', currentLine);
   });
 }
 
 // Add dragstart listener to all color option elements
-document.querySelectorAll('.color-option').forEach(function(colorElement) {
+document.querySelectorAll('.color-option').forEach(function (colorElement) {
   colorElement.addEventListener('dragstart', handleDragStart);
 });
 
 // Add dragover and drop listeners to all slot elements
-document.querySelectorAll('.slot').forEach(function(slotElement) {
+document.querySelectorAll('.slot').forEach(function (slotElement) {
   slotElement.addEventListener('dragover', handleDragOver);
   slotElement.addEventListener('drop', handleDrop);
 });
 
-/**
- * Removes the "reset" parameter from the URL without reloading the page.
- */
-function removeResetParam() {
-  const url = new URL(window.location);
-  url.searchParams.delete('reset');
-  window.history.replaceState({}, document.title, url.toString());
-}
+
+
 
 /**
  * DOMContentLoaded event handler.
  * Restores the game state from local storage and updates UI elements.
  */
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   const params = new URLSearchParams(window.location.search);
-  
+
   if (params.get('reset') === 'true') {
     // Supprimer le paramètre reset avant de recharger la page
     removeResetParam();
@@ -212,69 +206,69 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-    // Vérifier dans le sessionStorage
-  if (sessionStorage.getItem("popreset") === 'true') {
-      resetPopup();
-      console.log("resetpop");
-      // Supprimer le flag pour éviter de réafficher le popup lors d'autres rechargements
-      sessionStorage.removeItem("popreset");
-      cplaced = 0;
-  }
-  
-  if (error) { // if there is an error, we don't go through and we stay to the current line 
-    currentLine --;
-    localStorage.setItem('currentLine', currentLine);
-  } 
-  if (cplaced == length){
-    displayWin(currentLine - 1);
-  }
-  if (currentLine > nbr_of_line){
-    displayLoose();
-  }
-
-  // Update evaluation slots for the previous line
-  updateEvaluationSlots(currentLine - 1, cplaced, iplaced);
-
-  // Restore filled slots for each completed line
-  for (let line = 1; line < currentLine; line++) {
-    for (let slot = 1; slot <= length; slot++) {
-      const slotKey = `slot-${line}-${slot}`;
-      const savedColor = localStorage.getItem(slotKey);
-      if (savedColor) {
-        const slotElement = document.getElementById(slotKey);
-        if (slotElement) {
-          fillSlot(slotElement, savedColor, true)
-        }
-      }
-    }
-
-    // Restore evaluation slot colors for this line
-    let evalSlots = document.querySelectorAll(`.evaluation-area-${line} .evaluation-slot`);
-    evalSlots.forEach((slot, index) => {
-      let savedColor = localStorage.getItem(`evaluation-slot-${line}-${index}`);
-      if (savedColor) {
-        slot.style.backgroundColor = savedColor;
-      }
-    });
-  }
-
-  updateArrow(currentLine)
-
-function resetGame() {
-    // On stocke le flag dans le sessionStorage
-    sessionStorage.setItem('popreset', 'true');
-    // On efface uniquement le localStorage (sans toucher au sessionStorage)
-    localStorage.clear();
-    console.log('clear');
-    location.reload();
-
+// Vérifier dans le sessionStorage
+if (sessionStorage.getItem("popreset") === 'true') {
+  resetPopup();
+  console.log("resetpop");
+  // Supprimer le flag pour éviter de réafficher le popup lors d'autres rechargements
+  sessionStorage.removeItem("popreset");
+  cplaced = 0;
 }
 
-window.resetGame = resetGame;  
-  // Check for a reset parameter in the URL to reset the game state
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('reset') === 'true') {
-    resetGame();
-    removeResetParam();
+if (error) { // if there is an error, we don't go through and we stay to the current line 
+  currentLine--;
+  localStorage.setItem('currentLine', currentLine);
+}
+if (cplaced == length) {
+  displayWin(currentLine - 1);
+}
+if (currentLine > nbr_of_line) {
+  displayLoose();
+}
+
+// Update evaluation slots for the previous line
+updateEvaluationSlots(currentLine - 1, cplaced, iplaced);
+
+// Restore filled slots for each completed line
+for (let line = 1; line < currentLine; line++) {
+  for (let slot = 1; slot <= length; slot++) {
+    const slotKey = `slot-${line}-${slot}`;
+    const savedColor = localStorage.getItem(slotKey);
+    if (savedColor) {
+      const slotElement = document.getElementById(slotKey);
+      if (slotElement) {
+        fillSlot(slotElement, savedColor, true)
+      }
+    }
   }
+
+  // Restore evaluation slot colors for this line
+  let evalSlots = document.querySelectorAll(`.evaluation-area-${line} .evaluation-slot`);
+  evalSlots.forEach((slot, index) => {
+    let savedColor = localStorage.getItem(`evaluation-slot-${line}-${index}`);
+    if (savedColor) {
+      slot.style.backgroundColor = savedColor;
+    }
+  });
+}
+
+updateArrow(currentLine)
+
+
+function resetGame() {
+  sessionStorage.setItem('popreset', 'true');
+  localStorage.clear();
+  console.log('clear');
+  location.reload();
+}
+/**
+ * Removes the "reset" parameter from the URL without reloading the page.
+ */
+function removeResetParam() {
+  const url = new URL(window.location);
+  url.searchParams.delete('reset');
+  window.history.replaceState({}, document.title, url.toString());
+}
+
+window.resetGame = resetGame;
 

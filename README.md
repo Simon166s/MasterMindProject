@@ -41,7 +41,7 @@ Ce projet propose une interface web interactive pour le jeu Mastermind, dévelop
 2. Ouvrez l’URL affichée dans le terminal (généralement `http://127.0.0.1:5000`).
 
 3. Personnalisation des paramètres du jeu :  
-   - Dans `common.py`, modifiez la constante `LENGTH` pour ajuster le nombre de colonnes (valeur maximale : 8, attendez vous a ce que les delais d'attentes soit très longs pour les modes automatiques en raison des calculs nécessaires).
+   - Dans `common.py`, modifiez la constante `LENGTH` pour ajuster le nombre de colonnes (valeur maximale : 8, attendez vous à ce que les delais d'attentes soit très longs pour les modes automatiques en raison des calculs nécessaires).
    - Vous pouvez réduire la liste `COLORS`, mais pas l’agrandir.  
    - L’interface s’adapte automatiquement à ces changements.
 
@@ -65,4 +65,4 @@ python -m unittest discover -s tests
 
 ## Auteur
 
-Projet réalisé dans le cadre d’un apprentissage personnel / universitaire.
+Projet réalisé dans le cadre d’un projet à la prépa des INP par Léandre Le Duc et Simon Van Bommel
